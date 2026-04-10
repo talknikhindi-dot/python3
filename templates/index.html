@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talknik IT - VIP Dashboard</title>
+    <style>
+        :root { --neon: #00f2ff; --bg: #0a0a0a; }
+        body { background-color: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); width: 400px; text-align: center; }
+        h1 { color: var(--neon); text-transform: uppercase; letter-spacing: 2px; font-size: 24px; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--neon); background: transparent; color: white; box-sizing: border-box; outline: none; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--neon); color: black; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { box-shadow: 0 0 15px var(--neon); transform: scale(1.02); }
+        ul { list-style: none; padding: 0; margin-top: 25px; text-align: left; }
+        li { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid var(--neon); font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="glass-card">
+        <h1>Talknik IT Admin</h1>
+        <input type="text" id="taskInput" placeholder="Enter Data to Save...">
+        <button onclick="saveData()">Save to Cloud DB</button>
+        <ul id="dataList"></ul>
+    </div>
+    <script>
+        function loadData() {
+            fetch('/tasks').then(res => res.json()).then(data => {
+                const list = document.getElementById("dataList");
+                list.innerHTML = data.all_tasks.map(item => `<li>[ID: ${item.id}] ${item.task}</li>`).reverse().join("");
+            });
+        }
+        function saveData() {
+            const input = document.getElementById("taskInput");
+            if(!input.value) return;
+            fetch('/add', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({task: input.value})
+            }).then(() => { input.value = ""; loadData(); });
+        }
+        loadData();
+    </script>
+</body>
+</html>
